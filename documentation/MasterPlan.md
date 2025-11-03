@@ -584,3 +584,295 @@ Promote health and wellness, sharing tips and medical insights from church docto
 
 ✅ **Summary:**
 This structure ensures your SDA Church website remains organized, scalable, and spiritually engaging — allowing dynamic updates without backend complexity. Each page connects directly to AWS services while keeping clear user permissions.
+
+---
+
+# 🏗️ **Part 4 — Implementation Roadmap**
+
+This roadmap provides a **phase-by-phase sequence** to build, integrate, and deploy the website smoothly — from the first UI skeleton to the final AWS deployment.
+Each phase includes detailed milestones, checklists, and future scalability ideas.
+
+---
+
+## 🚀 **Phase 1 — Initial Setup & Environment**
+
+**Objective:**
+Prepare your local development environment, project structure, and base UI.
+
+**Tasks:**
+
+1. Clone and prepare the React Starter:
+
+   ```bash
+   git clone https://github.com/Danncode10/React_starter.git "React folder"
+   cd "React folder"
+   rm -rf .git
+   ```
+2. Create documentation folder:
+
+   ```bash
+   mkdir documentation
+   ```
+3. Verify base files exist:
+
+   * ✅ `README.md` → Contains App Master Plan
+   * ✅ `.gitignore` → Configured properly (node_modules, dist, env)
+4. Install all dependencies:
+
+   ```bash
+   npm install
+   ```
+5. Run the dev server to confirm baseline UI:
+
+   ```bash
+   npm run dev
+   ```
+6. Initialize Git for new repo:
+
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial setup for SDA Church Website"
+   ```
+
+---
+
+## 🎨 **Phase 2 — Frontend Layout & Navigation**
+
+**Objective:**
+Build the main user interface and routing system using React + TailwindCSS + Bootstrap.
+
+**Milestones:**
+
+* ✅ Install `react-router-dom`
+* ✅ Create `src/pages/` structure:
+
+  ```
+  src/pages/
+  ├── Home.tsx
+  ├── MissionStories.tsx
+  ├── Sermons.tsx
+  ├── LessonReviews.tsx
+  ├── Calendar.tsx
+  ├── Youth.tsx
+  ├── Health.tsx
+  ├── Login.tsx
+  └── AdminDashboard.tsx
+  ```
+* ✅ Create shared layouts:
+
+  ```
+  src/layouts/
+  ├── MainLayout.tsx   (header, nav, footer)
+  ├── AdminLayout.tsx  (sidebar + content area)
+  ```
+* ✅ Add TailwindCSS theme:
+
+  * Configure religious color palette (blue, gold, cream)
+  * Use clean typography (`Nunito Sans` or `Inter`)
+* ✅ Add navigation bar with links to all sections
+* ✅ Create placeholder content for each page
+
+**Deliverable:**
+Functional static frontend with full navigation and theme consistency.
+
+---
+
+## 🔐 **Phase 3 — AWS Authentication Setup**
+
+**Objective:**
+Integrate AWS Cognito for user login, signup, and role-based access (Admin, Pastor, Doctor, Member).
+
+**Milestones:**
+
+1. Create a **Cognito User Pool** in AWS Console.
+2. Define user groups:
+
+   * `admin`
+   * `pastor`
+   * `doctor`
+   * `member`
+3. Enable email-based login (username = email).
+4. In React:
+
+   * Install AWS Amplify:
+
+     ```bash
+     npm install aws-amplify
+     ```
+   * Configure Amplify in `src/services/awsConfig.ts`.
+   * Create Auth context to manage user state and roles.
+   * Implement pages:
+
+     * `Login.tsx`
+     * `Signup.tsx` (optional for admin use)
+   * Add ProtectedRoute component for admin/pastor pages.
+5. Test login/logout flow.
+
+**Deliverable:**
+Functional authentication system connected to AWS Cognito with role-based access.
+
+---
+
+## 🗃️ **Phase 4 — Database (DynamoDB) Integration**
+
+**Objective:**
+Store and retrieve all dynamic content (posts, events, comments) from DynamoDB.
+
+**Milestones:**
+
+1. Create DynamoDB tables:
+
+   * `Users`
+   * `Posts`
+   * `Comments`
+   * `Events`
+   * `Files`
+2. Configure AWS SDK in React:
+
+   ```bash
+   npm install @aws-sdk/client-dynamodb
+   ```
+3. Build services:
+
+   * `src/services/dynamoService.ts`
+
+     * `getPostsByCategory(category)`
+     * `addPost(postData)`
+     * `getEvents()`
+     * `addComment(commentData)`
+4. Test with sample dummy data.
+5. Create Admin Dashboard to:
+
+   * Add/Edit/Delete posts
+   * View pending comments
+   * Manage events
+
+**Deliverable:**
+Fully dynamic website with live content from AWS DynamoDB.
+
+---
+
+## ☁️ **Phase 5 — File Storage & Resource Management**
+
+**Objective:**
+Enable sermon and lesson file uploads and downloads via AWS S3.
+
+**Milestones:**
+
+1. Create S3 bucket:
+
+   * Name: `sda-nv-website-files`
+   * Public read access for downloads.
+2. Set up IAM policy for limited upload permission.
+3. Integrate S3 in React:
+
+   ```bash
+   npm install @aws-sdk/client-s3
+   ```
+4. Build `uploadService.ts`:
+
+   * `uploadFileToS3(file)`
+   * `getFileUrl(fileKey)`
+5. Add upload buttons on:
+
+   * Sermon Editor
+   * Lesson Review Editor
+   * Health Posts
+
+**Deliverable:**
+Sermon and lesson PDFs/images can be uploaded and downloaded directly via S3.
+
+---
+
+## 📅 **Phase 6 — Calendar & Comments**
+
+**Objective:**
+Add interactive church event calendar and comment system for public engagement.
+
+**Milestones:**
+
+* Install calendar library:
+
+  ```bash
+  npm install react-big-calendar date-fns
+  ```
+* Display events dynamically from DynamoDB.
+* Enable event creation (admin only).
+* Implement comments below posts:
+
+  * Email + message form for guests
+  * Direct comment for logged-in users
+  * Moderation toggle for admin
+* Store comments in DynamoDB under `Comments` table.
+
+**Deliverable:**
+Fully functional event calendar and comment system integrated with DynamoDB.
+
+---
+
+## 🌐 **Phase 7 — AWS Hosting & Deployment**
+
+**Objective:**
+Host and deploy the React website using AWS S3 + CloudFront + Route 53.
+
+**Milestones:**
+
+1. Build the frontend:
+
+   ```bash
+   npm run build
+   ```
+2. Upload build to S3:
+
+   ```bash
+   aws s3 sync dist/ s3://your-bucket-name
+   ```
+3. Set up CloudFront distribution:
+
+   * Origin: S3 bucket
+   * Enable caching + HTTPS
+4. Connect domain via Route 53
+5. Issue SSL certificate with ACM
+6. Add CloudWatch metrics for monitoring
+
+**Deliverable:**
+Live SDA Church website accessible via a custom domain (e.g., `sdavizcaya.org.ph`).
+
+---
+
+## ✨ **Phase 8 — Testing & Launch**
+
+**Objective:**
+Finalize and verify site quality before public release.
+
+**Checklist:**
+
+* ✅ All navigation links functional
+* ✅ Authentication flows work (admin, pastor, doctor)
+* ✅ Posts, events, and comments load correctly
+* ✅ Files upload and download properly
+* ✅ Responsive design tested (mobile + desktop)
+* ✅ Deployment HTTPS-secured and stable
+
+**Deliverable:**
+Stable, production-ready SDA Nueva Vizcaya Church website.
+
+---
+
+## 🌱 **Optional Future Expansions**
+
+| Feature                     | Description                                       | AWS Service                     |
+| --------------------------- | ------------------------------------------------- | ------------------------------- |
+| **Donation System**         | Accept tithes/offering via secure payment gateway | AWS Lambda + Stripe             |
+| **Newsletter Subscription** | Email updates and devotional plans                | AWS SES                         |
+| **Prayer Requests Form**    | Allow users to submit prayer requests             | DynamoDB + Email trigger        |
+| **Analytics Dashboard**     | Track page views and visitors                     | AWS Pinpoint / Google Analytics |
+| **Multimedia Gallery**      | Upload photos and videos from events              | AWS S3                          |
+| **Mobile App Extension**    | Convert React to React Native frontend            | AWS Amplify backend re-use      |
+
+---
+
+✅ **Summary:**
+This roadmap guides development from zero to deployment in 8 logical phases. Each milestone builds upon the previous one, ensuring smooth integration of AWS and React technologies with clear scalability.
+
