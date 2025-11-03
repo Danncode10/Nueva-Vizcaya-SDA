@@ -144,6 +144,71 @@ Integrate AWS Cognito for user login, signup, and role-based access (Admin, Past
         -   Confirmed all four groups (admin, pastor, doctor, member) were listed in the Groups section.
 - This will enable role-based access control
 
+---
+
+## 📧 **Substage: Enable email-based login**
+
+**Status:** ✅ **COMPLETED**
+
+**Date Completed:** November 3, 2025
+
+### 🎯 **What We Accomplished (Newbie Notes)**
+
+I thought email login was already set up when we created the User Pool, but it turns out there was more configuration needed! Here's what we did step by step:
+
+#### ✅ **Step 1: Verified Basic Email Configuration**
+- Went back to AWS Console → Cognito → Our User Pool
+- Checked "Sign-in experience" section
+- Confirmed **"Email"** was selected as sign-in method
+- Verified **"Self-service sign-up"** was enabled
+- Confirmed **"Email"** was required attribute
+
+#### ✅ **Step 2: Found and Configured Email Templates**
+- Discovered email settings are under **"Branding" → "Message templates"**
+- Clicked "Edit" to customize the verification message
+- Set up **email verification** for new users (codes sent via email)
+- Customized the email template with church-friendly message:
+  - **Subject:** "Welcome to SDA Nueva Vizcaya Church - Verify Your Account"
+  - **Message:** Welcoming text with verification code `{####}` placeholder
+
+#### ✅ **Step 3: Verified Password Recovery**
+- Checked "Authentication" → "Sign-in" section
+- Confirmed **"Self-service account recovery"** was **"Enabled"**
+- Verified **"Recovery message delivery method"** was **"Email if available, otherwise SMS"**
+
+#### ✅ **Step 4: Tested Email Functionality**
+- Created a test user in AWS Console
+- Received test email from `no-reply@verificationemail.com`
+- Confirmed emails are being sent successfully!
+
+### 🤔 **What I Learned (Newbie Perspective)**
+
+#### 🧠 **Key Concepts Understood**
+- **Email verification ≠ Email sign-in**: Just selecting email as sign-in method isn't enough - you need to configure HOW emails are sent
+- **Message templates**: AWS lets you customize the emails users receive (verification, password reset, etc.)
+- **Cognito vs SES**: Cognito can send emails for free (limited), or you can use Amazon SES for higher limits
+- **Verification codes**: The `{####}` placeholder is where the actual verification code appears
+
+#### 💡 **Important Decisions Made**
+- Used **Cognito's default email service** (free, good for testing)
+- Customized email template to be **church-appropriate** and welcoming
+- Kept SMS as backup for password recovery (in case email fails)
+
+#### ⚠️ **Things to Remember for Future**
+- Email templates can be customized but must keep the `{####}` code placeholder
+- Test emails work by creating test users in AWS Console
+- For production, might want to upgrade to **Amazon SES** for better email deliverability
+- Email verification happens automatically when users sign up through the website
+
+---
+
+## 🔄 **Next Steps**
+
+### **Immediate Next Substage**
+- **Install and configure AWS Amplify in React**
+  - This will connect our React frontend to the Cognito User Pool
+  - Need to install Amplify packages and configure with User Pool ID/Client ID
+
 ### **React Integration (Coming Soon)**
 - Install AWS Amplify in the React project
 - Configure Amplify with the User Pool ID and Client ID
@@ -182,7 +247,7 @@ Integrate AWS Cognito for user login, signup, and role-based access (Admin, Past
 ✅ AWS credentials obtained for React integration
 ✅ Foundation laid for role-based access control
 
-**Progress:** 1/8 substages completed in Stage 3
+**Progress:** 2/8 substages completed in Stage 3
 
 ---
 

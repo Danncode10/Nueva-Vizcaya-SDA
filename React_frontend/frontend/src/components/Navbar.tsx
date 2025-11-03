@@ -15,7 +15,7 @@ const Navbar: React.FC = () => {
             <Nav.Link as={Link} to="/" className="text-primary hover:text-secondary px-3 py-2">
               Home
             </Nav.Link>
-            <NavDropdown title="Ministries" id="basic-nav-dropdown" className="text-primary hover:text-secondary px-3 py-2">
+            <NavDropdown title="Ministries" id="basic-nav-dropdown" className="text-primary hover:text-secondary d-flex align-items-center">
               <NavDropdown.Item as={Link} to="/mission-stories">Mission Stories</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/sermons">Sermons</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/lesson-reviews">Lesson Reviews</NavDropdown.Item>

@@ -47,7 +47,7 @@ Branch Name: 3_AWS_Auth
 **Sub-stages:**
 - Create a Cognito User Pool in the AWS Console.✅
 - Define user groups (`admin`, `pastor`, `doctor`, `member`).✅
-- Enable email-based login.
+- Enable email-based login.✅
 - Install and configure AWS Amplify in React.
 - Create an Auth context to manage user state and roles.
 - Implement `Login.tsx` and `Signup.tsx` pages.
