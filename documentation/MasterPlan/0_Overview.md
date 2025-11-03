@@ -24,6 +24,8 @@ Branch Name: 1_Setup
 
 ## **Stage 2 — Frontend Layout & Navigation**
 
+Branch Name: 2_Frontend
+
 **Objective:** Build the main user interface and routing system using React, TailwindCSS, and Bootstrap.
 
 **Sub-stages:**
