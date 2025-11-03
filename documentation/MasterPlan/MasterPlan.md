@@ -51,7 +51,6 @@ The website also supports the revival of **Afternoon Services**, youth involveme
 | **Youth**             | Youth programs, devotionals, and activity gallery.           |
 | **Health**            | Wellness blogs and health lectures.                          |
 | **Calendar**          | Upcoming church events, sports fests, and ministry meetings. |
-| **Comments**          | Email-based public comment system (with admin moderation).   |
 | **About & Contact**   | Church background, leadership, and prayer request form.      |
 | **Admin Dashboard**   | Account management, content control, event scheduling.       |
 
@@ -247,7 +246,6 @@ Below is the logical structure of how the components interact:
 | **Post Management (Create/Edit/Delete)**    | DynamoDB                            | API calls using `AWS.DynamoDB.DocumentClient`                   |
 | **Upload Files (PDFs, Images, Videos)**     | S3                                  | `Storage.put()` and `Storage.get()` from Amplify                |
 | **Display Calendar Events**                 | DynamoDB                            | `scan()` or `query()` for upcoming event entries                |
-| **Public Comments**                         | DynamoDB + Cognito (optional email) | Lightweight form -> DynamoDB record                             |
 | **Website Hosting**                         | S3 + CloudFront                     | React `build/` folder uploaded to S3, distributed by CloudFront |
 | **Monitoring**                              | CloudWatch                          | Tracks all AWS activities, logs errors automatically            |
 
@@ -259,7 +257,6 @@ Below is the logical structure of how the components interact:
 | ------------ | ------------- | ---------- | ------------------------------------------------------ |
 | **Users**    | `userId`      | —          | Stores account info, role, and display name            |
 | **Posts**    | `postId`      | `category` | Sermons, Mission Stories, Lesson Reviews, Health posts |
-| **Comments** | `commentId`   | `postId`   | User comments tied to a specific post                  |
 | **Events**   | `eventId`     | `date`     | Calendar event schedules                               |
 | **Files**    | `fileId`      | `postId`   | File metadata for downloadable sermons and lessons     |
 
@@ -649,13 +646,15 @@ Build the main user interface and routing system using React + TailwindCSS + Boo
 
   ```
   src/pages/
-  ├── Home.tsx
+  ├── HomePage.tsx
   ├── MissionStories.tsx
   ├── Sermons.tsx
   ├── LessonReviews.tsx
-  ├── Calendar.tsx
+  ├── AfternoonService.tsx
   ├── Youth.tsx
   ├── Health.tsx
+  ├── Calendar.tsx
+  ├── AboutContact.tsx
   ├── Login.tsx
   └── AdminDashboard.tsx
   ```
@@ -666,11 +665,15 @@ Build the main user interface and routing system using React + TailwindCSS + Boo
   ├── MainLayout.tsx   (header, nav, footer)
   ├── AdminLayout.tsx  (sidebar + content area)
   ```
-* ✅ Add TailwindCSS theme:
+* ✅ Configure TailwindCSS theme:
 
-  * Configure religious color palette (blue, gold, cream)
-  * Use clean typography (`Nunito Sans` or `Inter`)
-* ✅ Add navigation bar with links to all sections
+  * Implemented religious color palette (Deep Blue, Golden Yellow, Light Cream)
+  * Configured typography (`Inter` or `Nunito Sans`)
+* ✅ Implement navigation bar:
+
+  * Grouped "Mission Stories", "Sermons", "Lesson Reviews", "Afternoon Service", "Youth", and "Health" under a "Ministries" dropdown.
+  * Removed "Comments" section.
+  * Implemented conditional display for "Login" / "Admin Dashboard" (to be fully functional with authentication setup).
 * ✅ Create placeholder content for each page
 
 **Deliverable:**
@@ -785,10 +788,10 @@ Sermon and lesson PDFs/images can be uploaded and downloaded directly via S3.
 
 ---
 
-## 📅 **Phase 6 — Calendar & Comments**
+## 📅 **Phase 6 — Calendar**
 
 **Objective:**
-Add interactive church event calendar and comment system for public engagement.
+Add interactive church event calendar.
 
 **Milestones:**
 
@@ -799,15 +802,9 @@ Add interactive church event calendar and comment system for public engagement.
   ```
 * Display events dynamically from DynamoDB.
 * Enable event creation (admin only).
-* Implement comments below posts:
-
-  * Email + message form for guests
-  * Direct comment for logged-in users
-  * Moderation toggle for admin
-* Store comments in DynamoDB under `Comments` table.
 
 **Deliverable:**
-Fully functional event calendar and comment system integrated with DynamoDB.
+Fully functional event calendar integrated with DynamoDB.
 
 ---
 

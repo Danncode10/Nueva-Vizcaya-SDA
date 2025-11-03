@@ -4,7 +4,7 @@ import { Navbar as BSNavbar, Nav, Container, NavDropdown } from 'react-bootstrap
 
 const Navbar: React.FC = () => {
   return (
-    <BSNavbar bg="light" expand="lg" className="shadow-md">
+    <BSNavbar expand="lg" className="shadow-md bg-accent">
       <Container>
         <BSNavbar.Brand as={Link} to="/" className="text-lg font-bold text-primary">
           SDA Nueva Vizcaya
@@ -15,7 +15,7 @@ const Navbar: React.FC = () => {
             <Nav.Link as={Link} to="/" className="text-primary hover:text-secondary px-3 py-2">
               Home
             </Nav.Link>
-            <NavDropdown title="Ministries" id="basic-nav-dropdown" className="text-primary hover:text-secondary px-3 py-2">
+            <NavDropdown title="Ministries" id="basic-nav-dropdown" className="text-primary hover:text-secondary align-self-center">
               <NavDropdown.Item as={Link} to="/mission-stories">Mission Stories</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/sermons">Sermons</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/lesson-reviews">Lesson Reviews</NavDropdown.Item>
