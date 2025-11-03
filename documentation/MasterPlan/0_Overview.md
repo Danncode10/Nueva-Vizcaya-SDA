@@ -8,6 +8,8 @@ This document outlines the key stages and sub-stages required to complete the SD
 
 ## **Stage 1 — Initial Setup & Environment**
 
+Branch Name: 1_Setup
+
 **Objective:** Prepare the local development environment, project structure, and base UI.
 
 **Sub-stages:**
