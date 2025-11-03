@@ -876,3 +876,174 @@ Stable, production-ready SDA Nueva Vizcaya Church website.
 ✅ **Summary:**
 This roadmap guides development from zero to deployment in 8 logical phases. Each milestone builds upon the previous one, ensuring smooth integration of AWS and React technologies with clear scalability.
 
+---
+
+# ☁️ **Part 5 — AWS Deployment Plan**
+
+This section provides **detailed instructions** for hosting, securing, and monitoring your church website on AWS, along with tips for backup, scalability, and cost efficiency.
+
+---
+
+## 🏠 **1. Step-by-Step Hosting & Setup**
+
+### **Step 1 — S3 Bucket for Website Hosting**
+
+1. Log in to **AWS Console → S3**.
+2. Create a new bucket:
+
+   * Name: `sda-nv-website`
+   * Region: Choose closest to your users (e.g., `ap-southeast-1`)
+   * Uncheck “Block all public access” → enable public read for CloudFront
+3. Enable **Static Website Hosting**:
+
+   * Index document: `index.html`
+   * Error document: `index.html` (React SPA fallback)
+4. Upload your React build folder (`dist/` or `build/`) contents to this bucket.
+
+---
+
+### **Step 2 — CloudFront Distribution**
+
+1. Navigate to **CloudFront → Create Distribution**
+2. Settings:
+
+   * **Origin**: Select your S3 bucket
+   * **Viewer Protocol Policy**: Redirect HTTP → HTTPS
+   * **Cache Policy**: Use “CachingOptimized” or custom 1-day cache
+   * **Default Root Object**: `index.html`
+3. Add **Custom SSL** (via ACM) if using a domain name.
+4. Wait for CloudFront distribution to deploy (usually ~15–20 min).
+
+---
+
+### **Step 3 — Domain Setup via Route 53**
+
+1. Register a domain (if not already) or use an existing one.
+2. Create a **Hosted Zone** in Route 53.
+3. Add **A Record (Alias)** pointing to your CloudFront distribution.
+4. Add **CNAME / Subdomain records** if needed (e.g., `admin.sdavizcaya.org.ph`).
+
+---
+
+### **Step 4 — SSL Certificate (ACM)**
+
+1. Navigate to **AWS Certificate Manager → Request Certificate**
+2. Select **Public Certificate**
+3. Add domain(s):
+
+   * `sdavizcaya.org.ph`
+   * `www.sdavizcaya.org.ph`
+4. Validate via DNS (Route 53 makes it automatic)
+5. Attach the certificate to your CloudFront distribution.
+
+---
+
+## 🔐 **2. IAM Permissions & Security**
+
+**Recommended IAM Roles:**
+
+| Role                    | Permissions                                               | Notes                                   |
+| ----------------------- | --------------------------------------------------------- | --------------------------------------- |
+| **Admin User**          | Full S3, CloudFront, Route53, DynamoDB, Cognito           | Only you for full management            |
+| **Developer Role**      | S3 (Read/Write), DynamoDB (Read/Write), Cognito (limited) | For frontend integration                |
+| **Upload Service Role** | S3 PutObject / GetObject                                  | Limited to file uploads by admin/pastor |
+| **Read-Only Public**    | CloudFront + S3 GetObject                                 | Used for serving static content         |
+
+**Security Best Practices:**
+
+* Enable **MFA** on all admin accounts
+* Use **least privilege principle** for all IAM roles
+* Turn on **AWS WAF** if public traffic spikes or security concerns arise
+* Enable **CloudTrail** for auditing API activity
+
+---
+
+## 📊 **3. Monitoring with CloudWatch**
+
+**Metrics to track:**
+
+* CloudFront:
+
+  * Cache hit/miss ratio
+  * Latency metrics
+* S3:
+
+  * Bucket storage usage
+  * Get/Put requests
+* Cognito:
+
+  * Sign-in/sign-up success/failure logs
+* DynamoDB:
+
+  * Read/Write capacity utilization
+  * Throttled requests
+
+**Alerts:**
+
+* Use **CloudWatch Alarms** for:
+
+  * High error rate on CloudFront
+  * DynamoDB capacity thresholds
+  * Cognito failed logins spikes
+
+---
+
+## 💾 **4. Backup & Recovery**
+
+* **DynamoDB:** Enable **on-demand backups** (daily or weekly)
+* **S3:** Enable **versioning** to retain older files
+* **CloudFront:** Keep a copy of the deployed build locally or in another S3 bucket
+* **Cognito:** Export user pool data periodically (CSV via AWS CLI)
+
+---
+
+## 📈 **5. Scalability & Cost Optimization**
+
+**Scalability:**
+
+* DynamoDB: Automatically scales throughput → handles spikes up to 20+ simultaneous users easily
+* S3 + CloudFront: Handles global traffic without server intervention
+* EC2 (optional backend): Use **t3.micro** for low traffic; consider **Auto Scaling** if usage grows
+
+**Cost Optimization Tips:**
+
+* Use **S3 Intelligent-Tiering** for infrequently accessed files
+* Enable **CloudFront caching** to reduce S3 GET requests
+* Use **AWS Free Tier** for EC2/DynamoDB/Cognito where possible
+* Avoid unnecessary Lambda executions; batch operations if needed
+
+---
+
+## ✅ **6. Deployment Checklist**
+
+| Task                              | Status |
+| --------------------------------- | ------ |
+| Build React frontend              | ☐      |
+| Upload `build/` folder to S3      | ☐      |
+| Configure CloudFront distribution | ☐      |
+| Attach ACM SSL certificate        | ☐      |
+| Connect Route 53 domain           | ☐      |
+| Test website on HTTPS             | ☐      |
+| Enable monitoring & alarms        | ☐      |
+| Backup DynamoDB & S3              | ☐      |
+
+---
+
+### 🔹 **Summary**
+
+By following this plan:
+
+* Your **React frontend** is securely hosted on **S3 + CloudFront**.
+* **Cognito** manages user authentication and roles.
+* **DynamoDB** stores all dynamic content with easy backup options.
+* **Route 53 + ACM** ensures domain mapping and HTTPS security.
+* **CloudWatch** allows monitoring and proactive alerting.
+* Minimal AWS resources ensure low cost while supporting the expected traffic (20 concurrent users).
+
+---
+
+This concludes your **SDA Nueva Vizcaya Church Website — Master Plan**.
+
+You now have a **full end-to-end roadmap**:
+
+* Project setup → tech stack → feature breakdown → implementation → AWS deployment
