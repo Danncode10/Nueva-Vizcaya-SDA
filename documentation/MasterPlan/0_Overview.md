@@ -45,8 +45,8 @@ Branch Name: 3_AWS_Auth
 **Objective:** Integrate AWS Cognito for user login, signup, and role-based access (Admin, Pastor, Doctor, Member).
 
 **Sub-stages:**
-- Create a Cognito User Pool in the AWS Console. -->
-- Define user groups (`admin`, `pastor`, `doctor`, `member`).
+- Create a Cognito User Pool in the AWS Console.✅
+- Define user groups (`admin`, `pastor`, `doctor`, `member`).✅
 - Enable email-based login.
 - Install and configure AWS Amplify in React.
 - Create an Auth context to manage user state and roles.

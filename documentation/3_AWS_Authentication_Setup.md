@@ -101,7 +101,55 @@ Integrate AWS Cognito for user login, signup, and role-based access (Admin, Past
 
 ### **Immediate Next Substage**
 - **Define user groups** (`admin`, `pastor`, `doctor`, `member`) in AWS Console
+  - **Status:** ✅ **COMPLETED**
+  - **Date Completed:** November 3, 2025
+  - **Details:**
+    1.  **Navigated to Cognito Console**:
+        -   Went to https://console.aws.amazon.com/cognito/home
+        -   Used existing AWS account credentials
+    2.  **Selected User Pool**:
+        -   Clicked on "User pools" in the left sidebar.
+        -   Selected the User Pool created earlier (e.g., `xphpi3`).
+    3.  **Went to the Groups Section**:
+        -   In the left sidebar, under the "User management" section, clicked on "Groups".
+    4.  **Created 'admin' Group**:
+        -   Clicked "Create group".
+        -   **Group name**: `admin`
+        -   **Description**: "Administrators with full access to manage the website."
+        -   **Precedence**: `0`
+        -   Left "IAM role" and "Add users to this group" blank.
+        -   Clicked "Create group".
+    5.  **Created 'pastor' Group**:
+        -   Clicked "Create group".
+        -   **Group name**: `pastor`
+        -   **Description**: "Pastors with elevated access for content management."
+        -   **Precedence**: `1`
+        -   Left "IAM role" and "Add users to this group" blank.
+        -   Clicked "Create group".
+    6.  **Created 'doctor' Group**:
+        -   Clicked "Create group".
+        -   **Group name**: `doctor`
+        -   **Description**: "Doctors with access to health-related content."
+        -   **Precedence**: `2`
+        -   Left "IAM role" and "Add users to this group" blank.
+        -   Clicked "Create group".
+    7.  **Created 'member' Group**:
+        -   Clicked "Create group".
+        -   **Group name**: `member`
+        -   **Description**: "Regular church members with standard access."
+        -   **Precedence**: `3`
+        -   Left "IAM role" and "Add users to this group" blank.
+        -   Clicked "Create group".
+    8.  **Verified Groups**:
+        -   Confirmed all four groups (admin, pastor, doctor, member) were listed in the Groups section.
 - This will enable role-based access control
+
+### **React Integration (Coming Soon)**
+- Install AWS Amplify in the React project
+- Configure Amplify with the User Pool ID and Client ID
+- Create Auth context for user state management
+- Build Login.tsx and Signup.tsx pages
+- Implement ProtectedRoute component
 
 ### **React Integration (Coming Soon)**
 - Install AWS Amplify in the React project
