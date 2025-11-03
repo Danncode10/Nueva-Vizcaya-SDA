@@ -297,3 +297,290 @@ Below is the logical structure of how the components interact:
 * **Future expansion** — Donation system, media streaming, or prayer requests API.
 
 ---
+
+# ✝️ **Part 3 — Feature Breakdown**
+
+This section defines every key feature and user interaction — how each page functions, who can access it, and how it connects to AWS.
+
+---
+
+## 🏠 **1. Home Page**
+
+**Purpose:**
+Acts as the central hub — a welcoming space showing the church’s mission, featured stories, announcements, and latest sermon posts.
+
+**Sections:**
+
+* Church logo, motto, and header banner
+* Featured Mission Story or Verse of the Week
+* Latest Sermon & Lesson Review previews
+* Upcoming Calendar Event preview
+* Footer: Church address, contact email, and social links
+
+**Access:**
+Public
+
+**Data Source:**
+
+* DynamoDB → `Posts` table (for featured content)
+* DynamoDB → `Events` table (for next event date)
+
+---
+
+## 🌍 **2. Mission Stories**
+
+**Purpose:**
+Share inspiring testimonies, outreach experiences, and personal stories of faith.
+
+**Features:**
+
+* Story list with thumbnails and short descriptions
+* Individual story view page with images and text
+* Filter or tag by “local”, “international”, or “community”
+* Optional download button (if the story has a PDF)
+
+**Access Control:**
+
+| Role   | Permission                          |
+| ------ | ----------------------------------- |
+| Admin  | CRUD (create, read, update, delete) |
+| Pastor | Create & edit own stories           |
+| Member | Read-only                           |
+| Public | Read-only                           |
+
+**DynamoDB Data Structure:**
+
+| Field       | Type          | Description                   |
+| ----------- | ------------- | ----------------------------- |
+| `postId`    | String (UUID) | Unique post ID                |
+| `category`  | String        | “mission”                     |
+| `title`     | String        | Story title                   |
+| `author`    | String        | Pastor or Admin name          |
+| `content`   | String        | Markdown or HTML content      |
+| `imageUrl`  | String        | Optional cover image (S3 URL) |
+| `fileUrl`   | String        | Optional PDF (S3 URL)         |
+| `createdAt` | Date          | Timestamp                     |
+
+---
+
+## 🎙️ **3. Sermons**
+
+**Purpose:**
+Provide sermons for replay, download, or reference — encouraging spiritual reflection.
+
+**Features:**
+
+* Sermon list (title, date, speaker, summary)
+* Individual sermon page (full text, YouTube link, downloads)
+* Filter by speaker or date
+* “Download Resource” button (from S3)
+
+**Access Control:**
+
+| Role          | Permission              |
+| ------------- | ----------------------- |
+| Admin         | CRUD                    |
+| Pastor        | Create/Edit own sermons |
+| Member/Public | View & download         |
+
+**DynamoDB Table: Posts**
+
+| Field        | Type   | Description                   |
+| ------------ | ------ | ----------------------------- |
+| `postId`     | String | Unique sermon ID              |
+| `category`   | String | “sermon”                      |
+| `title`      | String | Sermon title                  |
+| `speaker`    | String | Pastor name                   |
+| `content`    | String | Sermon notes or transcript    |
+| `youtubeUrl` | String | Optional sermon video         |
+| `fileUrl`    | String | Optional sermon material (S3) |
+| `createdAt`  | Date   | Timestamp                     |
+
+---
+
+## 📖 **4. Lesson Reviews**
+
+**Purpose:**
+Offer weekly lesson summaries for Sabbath School classes, allowing users to download study guides and view structured outlines.
+
+**Features:**
+
+* Week-by-week lesson listing
+* Detailed lesson review with outline and scripture references
+* Downloadable PDF of the summary
+* Tags (e.g., “Quarter 1”, “Week 5”, “Faithfulness”)
+
+**Access Control:**
+
+| Role          | Permission    |
+| ------------- | ------------- |
+| Admin         | CRUD          |
+| Pastor        | Create/Edit   |
+| Member/Public | Read/Download |
+
+**DynamoDB Fields (Posts table, category = “lesson”)**
+
+| Field       | Type   | Description                 |
+| ----------- | ------ | --------------------------- |
+| `postId`    | String | Lesson ID                   |
+| `category`  | String | “lesson”                    |
+| `title`     | String | Lesson title                |
+| `summary`   | String | Concise summary             |
+| `outline`   | String | Markdown/structured outline |
+| `pdfUrl`    | String | Downloadable resource (S3)  |
+| `week`      | Number | Week number                 |
+| `quarter`   | Number | Quarter of the year         |
+| `createdAt` | Date   | Timestamp                   |
+
+---
+
+## 🕓 **5. Calendar / Events**
+
+**Purpose:**
+Display all upcoming church events like Sports Fest, Youth Sabbath, Women’s Ministry, and Outreach schedules.
+
+**Features:**
+
+* Calendar grid or list view
+* Add/edit/delete events (Admin only)
+* Show event details: date, description, location, and ministry category
+* Auto-expire past events
+
+**Access Control:**
+
+| Role          | Permission |
+| ------------- | ---------- |
+| Admin         | CRUD       |
+| Member/Public | Read-only  |
+
+**DynamoDB Table: Events**
+
+| Field         | Type   | Description                       |
+| ------------- | ------ | --------------------------------- |
+| `eventId`     | String | Unique ID                         |
+| `title`       | String | Event name                        |
+| `description` | String | Event details                     |
+| `date`        | String | ISO date string                   |
+| `location`    | String | Venue                             |
+| `category`    | String | “Youth”, “Health”, “Womens”, etc. |
+| `createdAt`   | Date   | Timestamp                         |
+
+---
+
+## 💬 **6. Comments System**
+
+**Purpose:**
+Allow church members or guests to engage and share thoughts on posts.
+
+**Features:**
+
+* Simple comment box (name + email + message)
+* Auto-approval for authenticated users
+* Manual moderation for guest comments
+* Anti-spam check (basic regex validation)
+
+**Access Control:**
+
+| Role          | Permission                   |
+| ------------- | ---------------------------- |
+| Admin         | Delete/Moderate              |
+| Pastor/Member | Post comments                |
+| Public        | Post comment with email only |
+
+**DynamoDB Table: Comments**
+
+| Field       | Type    | Description       |
+| ----------- | ------- | ----------------- |
+| `commentId` | String  | Unique comment ID |
+| `postId`    | String  | Related post      |
+| `name`      | String  | Commenter name    |
+| `email`     | String  | Optional          |
+| `message`   | String  | Comment text      |
+| `createdAt` | Date    | Timestamp         |
+| `approved`  | Boolean | For moderation    |
+
+---
+
+## 🧑‍🤝‍🧑 **7. Youth Section**
+
+**Purpose:**
+Highlight youth activities, Bible studies, and SDA youth organization updates.
+
+**Features:**
+
+* Dedicated “Youth Page” with category filter
+* Posts (photos, event recaps, upcoming plans)
+* Option to embed YouTube highlights
+
+**Access Control:**
+
+| Role                  | Permission              |
+| --------------------- | ----------------------- |
+| Admin                 | CRUD                    |
+| Pastor                | Create/Edit             |
+| Youth Leader (future) | Limited post permission |
+| Member/Public         | Read-only               |
+
+**Data Source:**
+Same `Posts` table (`category = "youth"`)
+
+---
+
+## 🩺 **8. Health Section**
+
+**Purpose:**
+Promote health and wellness, sharing tips and medical insights from church doctors.
+
+**Features:**
+
+* Blog-style post layout
+* Doctor profile and article list
+* Downloadable health leaflets or PDFs
+* Optional “Ask the Doctor” contact form (future feature)
+
+**Access Control:**
+
+| Role          | Permission  |
+| ------------- | ----------- |
+| Admin         | CRUD        |
+| Doctor        | Create/Edit |
+| Member/Public | Read-only   |
+
+**DynamoDB Data (Posts table, `category = "health"`)**
+
+| Field       | Type   | Description              |
+| ----------- | ------ | ------------------------ |
+| `postId`    | String | Unique health article ID |
+| `author`    | String | Doctor name              |
+| `content`   | String | Health-related post      |
+| `fileUrl`   | String | Optional download        |
+| `createdAt` | Date   | Timestamp                |
+
+---
+
+## 👤 **9. Roles and Permissions Summary**
+
+| Role                 | Description           | Access Summary                                     |
+| -------------------- | --------------------- | -------------------------------------------------- |
+| **Admin**            | Website manager       | Full access: manage users, posts, events, comments |
+| **Pastor**           | Spiritual contributor | Post sermons, lessons, mission stories             |
+| **Doctor**           | Health contributor    | Post in health section                             |
+| **Member (Bro/Sis)** | Church member         | Read-only + comment access                         |
+| **Public**           | Guest visitor         | Read-only + comment via email                      |
+
+---
+
+## 🗃️ **10. DynamoDB Table Summary**
+
+| Table        | Key Fields                    | Purpose                                      |
+| ------------ | ----------------------------- | -------------------------------------------- |
+| **Users**    | `userId`, `role`, `email`     | Authentication reference (Cognito sync)      |
+| **Posts**    | `postId`, `category`, `title` | Mission, Sermon, Lesson, Youth, Health posts |
+| **Comments** | `commentId`, `postId`         | Post discussion system                       |
+| **Events**   | `eventId`, `date`, `category` | Church calendar data                         |
+| **Files**    | `fileId`, `postId`            | File management metadata                     |
+
+---
+
+✅ **Summary:**
+This structure ensures your SDA Church website remains organized, scalable, and spiritually engaging — allowing dynamic updates without backend complexity. Each page connects directly to AWS services while keeping clear user permissions.
