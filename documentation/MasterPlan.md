@@ -161,4 +161,139 @@ SDA_Nueva_Vizcaya_Church_Website/
 * ✅ Create a new GitHub repository once setup is complete.
 * ✅ Plan to initialize AWS configuration files inside `React_frontend/src/services/aws/`.
 
+
+# 🕊️ **Part 2 — Tech Stack & Architecture**
+
+---
+
+## ⚙️ **1. Complete Tech Stack**
+
+| Category                      | Technology                                   | Purpose / Notes                                                            |
+| ----------------------------- | -------------------------------------------- | -------------------------------------------------------------------------- |
+| **Frontend Framework**        | **React (Vite + TypeScript)**                | Fast, modern, scalable frontend development                                |
+| **Styling**                   | **TailwindCSS + Bootstrap 5**                | Tailwind for flexibility and modern design; Bootstrap for responsive grids |
+| **UI/UX Tools**               | **Shadcn/UI + Lucide Icons + Framer Motion** | Beautiful, minimal, smooth animations                                      |
+| **Routing**                   | **React Router v7**                          | Client-side navigation                                                     |
+| **State Management**          | **React Context + Local Storage**            | Lightweight global state for user roles, theme, etc.                       |
+| **Form Handling**             | **React Hook Form + Yup Validation**         | Clean and reliable input forms (login, posts, comments)                    |
+| **Authentication**            | **AWS Cognito**                              | User sign-up/sign-in, password recovery, and role-based access control     |
+| **Database**                  | **AWS DynamoDB**                             | Stores user data, posts, events, and comments                              |
+| **File Storage**              | **AWS S3**                                   | Stores downloadable resources (PDFs, sermon files, lesson materials)       |
+| **Hosting & CDN**             | **S3 + CloudFront**                          | Static web hosting with global caching for fast performance                |
+| **Domain & SSL**              | **Route 53 + ACM**                           | Domain registration and HTTPS certificate                                  |
+| **Monitoring**                | **AWS CloudWatch**                           | Performance metrics and logs                                               |
+| **Optional Backend (Future)** | **AWS Lambda or EC2 (t3.micro)**             | For custom APIs, if needed (e.g., scheduled tasks, content moderation)     |
+| **Version Control**           | **Git + GitHub**                             | Source code management                                                     |
+| **Deployment**                | **AWS Amplify or manual S3 sync**            | Continuous deployment or manual build sync                                 |
+| **Documentation**             | **Markdown (.md)**                           | For architecture, features, and deployment notes                           |
+
+---
+
+## 🏗️ **2. High-Level System Architecture**
+
+Below is the logical structure of how the components interact:
+
+```
+                ┌───────────────────────────┐
+                │   React Frontend (Vite)   │
+                │  Tailwind + Bootstrap UI  │
+                └────────────┬──────────────┘
+                             │
+              Auth & Data via AWS SDK (Amplify/Cognito/Dynamo)
+                             │
+         ┌───────────────────┼────────────────────┐
+         │                   │                    │
+ ┌───────▼───────┐   ┌───────▼────────┐    ┌──────▼───────┐
+ │ AWS Cognito   │   │ AWS DynamoDB   │    │ AWS S3       │
+ │ Authentication│   │ Posts, Events, │    │ File Storage │
+ │ Roles & Tokens│   │ Comments, etc.│    │ PDFs, Images │
+ └───────────────┘   └───────────────┘    └──────────────┘
+                             │
+                             ▼
+                   ┌────────────────────┐
+                   │ CloudFront + S3    │
+                   │ (Hosting & CDN)    │
+                   └────────────────────┘
+                             │
+                             ▼
+                   🌐  Route 53 + ACM (Domain + HTTPS)
+```
+
+---
+
+## 🔐 **3. AWS Component Roles**
+
+| AWS Service                  | Function                       | Notes                                                                                                                        |
+| ---------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| **Cognito**                  | Authentication + Authorization | Admin creates accounts for pastors and members. Tokens manage role-based access.                                             |
+| **DynamoDB**                 | NoSQL Database                 | Tables for posts, comments, users, and calendar events. Designed for fast reads/writes.                                      |
+| **S3**                       | File & Asset Storage           | Stores sermon files, images, and lesson PDFs. Configured with read-only access for public, and write access for admin users. |
+| **CloudFront**               | CDN & HTTPS Distribution       | Ensures the website loads quickly globally with cached copies.                                                               |
+| **Route 53**                 | Domain Management              | Example: `sdavizcaya.org.ph` (custom domain connected to CloudFront).                                                        |
+| **ACM**                      | SSL Certificates               | Enables HTTPS security for all connections.                                                                                  |
+| **CloudWatch**               | Logging & Monitoring           | Tracks traffic, errors, and performance metrics.                                                                             |
+| **(Optional) EC2 or Lambda** | Custom Logic Server            | Future support for email notifications, scheduled cleanup, or analytics.                                                     |
+
+---
+
+## 🧩 **4. Integration Map: React + AWS**
+
+**React Frontend** communicates directly with AWS via the **AWS SDK / Amplify Libraries**.
+
+| Feature                                     | AWS Service                         | React Integration                                               |
+| ------------------------------------------- | ----------------------------------- | --------------------------------------------------------------- |
+| **User Login / Signup**                     | Cognito                             | `Auth.signIn()`, `Auth.signUp()`, `Auth.signOut()`              |
+| **Role Management (Admin, Pastor, Member)** | Cognito Groups                      | Assigned manually in Cognito dashboard or via Admin Panel       |
+| **Post Management (Create/Edit/Delete)**    | DynamoDB                            | API calls using `AWS.DynamoDB.DocumentClient`                   |
+| **Upload Files (PDFs, Images, Videos)**     | S3                                  | `Storage.put()` and `Storage.get()` from Amplify                |
+| **Display Calendar Events**                 | DynamoDB                            | `scan()` or `query()` for upcoming event entries                |
+| **Public Comments**                         | DynamoDB + Cognito (optional email) | Lightweight form -> DynamoDB record                             |
+| **Website Hosting**                         | S3 + CloudFront                     | React `build/` folder uploaded to S3, distributed by CloudFront |
+| **Monitoring**                              | CloudWatch                          | Tracks all AWS activities, logs errors automatically            |
+
+---
+
+## 📂 **5. DynamoDB Data Design (Overview)**
+
+| Table        | Partition Key | Sort Key   | Description                                            |
+| ------------ | ------------- | ---------- | ------------------------------------------------------ |
+| **Users**    | `userId`      | —          | Stores account info, role, and display name            |
+| **Posts**    | `postId`      | `category` | Sermons, Mission Stories, Lesson Reviews, Health posts |
+| **Comments** | `commentId`   | `postId`   | User comments tied to a specific post                  |
+| **Events**   | `eventId`     | `date`     | Calendar event schedules                               |
+| **Files**    | `fileId`      | `postId`   | File metadata for downloadable sermons and lessons     |
+
+---
+
+## 🪶 **6. Authentication Roles**
+
+| Role                     | Permissions                                                    |
+| ------------------------ | -------------------------------------------------------------- |
+| **Admin**                | Create/update/delete any post, approve comments, manage users. |
+| **Pastor**               | Create and edit sermon or lesson review posts.                 |
+| **Member (Bro/Sis)**     | Read-only access + can comment (email or light auth).          |
+| **Doctor / Health Team** | Post health-related blogs and articles.                        |
+| **Public User**          | View content and leave comment with email validation.          |
+
+---
+
+## 🎨 **7. Design Theme**
+
+| Element             | Style                                                         |
+| ------------------- | ------------------------------------------------------------- |
+| **Primary Color**   | Deep Blue (`#0A3D62`) — represents faith                      |
+| **Secondary Color** | Golden Yellow (`#FFC312`) — symbolizes hope                   |
+| **Accent Color**    | Light Cream (`#F5F5DC`) — warmth and peace                    |
+| **Font**            | “Inter” or “Nunito Sans” (modern and soft)                    |
+| **Mood**            | Calm, spiritual, balanced — focus on readability and serenity |
+
+---
+
+## 🧱 **8. Scalability & Maintenance**
+
+* **Scalable storage** — S3 and DynamoDB automatically scale for future growth.
+* **Low-cost design** — t3.micro or full static hosting ensures minimal AWS bill.
+* **Easy maintenance** — Admin access via web UI; AWS services managed visually.
+* **Future expansion** — Donation system, media streaming, or prayer requests API.
+
 ---
