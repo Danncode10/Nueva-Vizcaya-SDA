@@ -13,7 +13,7 @@ const HomePage: React.FC = () => {
               <p className="lead mb-4">
                 Join us in worship and community. Experience the love of Christ in our services and activities.
               </p>
-              <Button variant="light" size="lg" className="mr-5">
+              <Button variant="light" size="lg" className="m-2">
                 Visit Us This Sabbath
               </Button>
               <Button variant="outline-light" size="lg">
